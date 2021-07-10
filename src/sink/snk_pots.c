@@ -276,7 +276,6 @@
                 break;
 
                 case interface_socket:
-
                     snk_pots_process_interface_socket(obj);
 
                 break;
@@ -346,12 +345,30 @@
     void snk_pots_process_format_text_json(snk_pots_obj * obj) {
 
         unsigned int iPot;
+        char hostbuffer[256];
+	int hostname;
+	time_t timer;
+  	struct tm y2k = {0};
+  	double seconds;
 
+  	y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+  	y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+
+  	time(&timer);  /* get current time; same as: timer = time(NULL)  */
+
+  	seconds = difftime(timer,mktime(&y2k));
         obj->buffer[0] = 0x00;
 
         sprintf(obj->buffer,"%s{\n",obj->buffer);
         sprintf(obj->buffer,"%s    \"timeStamp\": %llu,\n",obj->buffer,obj->in->timeStamp);
-        sprintf(obj->buffer,"%s    \"src\": [\n",obj->buffer);
+ 	hostname = gethostname(hostbuffer,sizeof(hostbuffer));
+        if (hostname == -1)
+	{
+		strcpy(hostbuffer,"none");
+	}
+	sprintf(obj->buffer,"%s    \"host\": \"%s\",\n",obj->buffer,hostbuffer);
+	sprintf(obj->buffer,"%s    \"timer\": \"%f\",\n",obj->buffer,seconds);
+	sprintf(obj->buffer,"%s    \"src\": [\n",obj->buffer);
 
         for (iPot = 0; iPot < obj->nPots; iPot++) {
 
