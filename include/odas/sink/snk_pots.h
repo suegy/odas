@@ -30,7 +30,7 @@
     #include <netinet/in.h>
     #include <arpa/inet.h>
     #include <unistd.h>
-    #include <time.h>
+    #include <sys/time.h>
 
     #include "../general/format.h"
     #include "../general/interface.h"

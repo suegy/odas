@@ -347,16 +347,9 @@
         unsigned int iPot;
         char hostbuffer[256];
 	int hostname;
-	time_t timer;
-  	struct tm y2k = {0};
-  	double seconds;
+	struct timeval current_time;
+  	gettimeofday(&current_time, NULL);
 
-  	y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
-  	y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
-
-  	time(&timer);  /* get current time; same as: timer = time(NULL)  */
-
-  	seconds = difftime(timer,mktime(&y2k));
         obj->buffer[0] = 0x00;
 
         sprintf(obj->buffer,"%s{\n",obj->buffer);
@@ -367,7 +360,8 @@
 		strcpy(hostbuffer,"none");
 	}
 	sprintf(obj->buffer,"%s    \"host\": \"%s\",\n",obj->buffer,hostbuffer);
-	sprintf(obj->buffer,"%s    \"timer\": \"%f\",\n",obj->buffer,seconds);
+	sprintf(obj->buffer,"%s    \"time_sec\": \"%ld\",\n",obj->buffer,current_time.tv_sec);
+	sprintf(obj->buffer,"%s    \"time_usec\": \"%ld\",\n",obj->buffer,current_time.tv_usec);
 	sprintf(obj->buffer,"%s    \"src\": [\n",obj->buffer);
 
         for (iPot = 0; iPot < obj->nPots; iPot++) {
